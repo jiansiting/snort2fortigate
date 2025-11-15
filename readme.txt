@@ -17,12 +17,9 @@
 
 ### 使用方法（Windows/Linux/Mac）
 #### 1. 基础使用（指定输入输出文件）
-```bash
 python snort2fortigate.py -i 你的Snort规则文件.rules -o 输出XML文件.xml
-```
 
 #### 2. 示例（实际场景）
-```bash
 # 简单转换（同目录下）
 python snort2fortigate.py -i industrial_snort.rules -o fg_industrial_ips.xml
 
@@ -31,14 +28,13 @@ python snort2fortigate.py -i "C:\snort\rules\ot_rules.rules" -o "C:\fortigate\im
 
 # 指定路径转换（Linux/Mac）
 python snort2fortigate.py -i /home/user/snort/rules/ot_rules.rules -o /home/user/fortigate/ot_ips.xml
-```
 
 #### 3. 查看帮助
-```bash
+
 python snort2fortigate.py -h
-```
+
 会显示详细的参数说明和使用示例：
-```
+
 usage: snort2fortigate.py [-h] -i INPUT -o OUTPUT
 
 Snort IPS规则转FortiGate自定义IPS规则工具
@@ -51,5 +47,24 @@ options:
                         输出FortiGate XML文件路径（必填），如：fortigate_ips.xml
 
 示例：python snort2fortigate.py -i snort_rules.rules -o fortigate_ips.xml
-```
+
+### 示例转换效果
+Snort 原始规则：
+alert tcp any any -> any 80 (msg:"HTTP Exploit Attempt"; content:"/exploit.php"; sid:1000001; rev:2; offset:0; depth:20;)
+
+转换后的 FortiGate XML 规则：
+xml
+<ips version="1.0">
+  <rule id="1000001" name="SNORT_1000001_HTTP Exploit Attempt" action="alert" status="enable" log="enable">
+    <protocol>tcp</protocol>
+    <src-ip>0.0.0.0/0</src-ip>
+    <src-port>0-65535</src-port>
+    <dst-ip>0.0.0.0/0</dst-ip>
+    <dst-port>80-80</dst-port>
+    <signature type="pattern">
+      <pattern id="1" value="/exploit.php" offset="0" depth="20"/>
+    </signature>
+    <comment>Snort SID: 1000001, Rev: 2, Original Msg: HTTP Exploit Attempt</comment>
+  </rule>
+</ips>
 
